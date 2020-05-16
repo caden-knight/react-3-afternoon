@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-
+import axios from 'axios'
+import Post from './Post/Post'
 import './App.css';
 
 import Header from './Header/Header';
@@ -19,32 +20,59 @@ class App extends Component {
   }
   
   componentDidMount() {
-
+    axios.get('https://practiceapi.devmountain.com/api/posts')
+    .then(res => {
+      return this.setState({posts: res.data})
+    })
+    .catch( err => 'WTF')
   }
 
-  updatePost() {
-  
+  updatePost(id, text) {
+    axios.put(`https://practiceapi.devmountain.com/api/posts/?id=${id}`, {text})
+    .then(res => {
+      this.setState({posts: res.data})
+    })
+    .catch(err => 'Yo Mama')
   }
 
-  deletePost() {
-
+  deletePost(id) {
+    axios.delete(`https://practiceapi.devmountain.com/api/posts/?id=${id}`)
+    .then(res => {
+      this.setState({posts: res.data})
+    })
+    .catch("WTF")
   }
 
-  createPost() {
-
+  createPost(text) {
+    axios.post(`https://practiceapi.devmountain.com/api/posts`, {text})
+    .then(res => {
+      this.setState({posts: res.data})
+    })
   }
 
   render() {
+    //console.log(this.updatePost)
     const { posts } = this.state;
+    const post = posts.map(post => <Post 
+      key={post.id} 
+      posts={post} 
+      updatePostFn={this.updatePost} 
+      id={post.id} 
+      text={post.text}
+      deletePostFn={this.deletePost}/>)
 
+    
     return (
       <div className="App__parent">
         <Header />
 
         <section className="App__content">
 
-          <Compose />
+          <Compose createPostFn={this.createPost}/>
+          {post}
           
+
+            
         </section>
       </div>
     );
